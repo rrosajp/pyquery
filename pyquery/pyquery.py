@@ -344,6 +344,15 @@ class PyQuery(list):
                     el.tag = el.tag.split('}', 1)[1]
         return self
 
+    def _serialize_nodes(self, dumps):
+        # Text nodes from contents() cannot go through tostring.
+        has_text_nodes = any(isinstance(e, str) for e in self)
+        return ''.join(
+            e if isinstance(e, str) else dumps(
+                e, encoding=str, with_tail=not has_text_nodes)
+            for e in self
+        )
+
     def __str__(self):
         """xml representation of current nodes::
 
@@ -353,21 +362,11 @@ class PyQuery(list):
             <script>&lt;![[CDATA[ ]&gt;</script>
 
         """
-        has_text_nodes = any(isinstance(e, str) for e in self)
-        return ''.join(
-            e if isinstance(e, str) else etree.tostring(
-                e, encoding=str, with_tail=not has_text_nodes)
-            for e in self
-        )
+        return self._serialize_nodes(etree.tostring)
 
     def __unicode__(self):
         """xml representation of current nodes"""
-        has_text_nodes = any(isinstance(e, str) for e in self)
-        return u''.join(
-            e if isinstance(e, str) else etree.tostring(
-                e, encoding=str, with_tail=not has_text_nodes)
-            for e in self
-        )
+        return self._serialize_nodes(etree.tostring)
 
     def __html__(self):
         """html representation of current nodes::
@@ -378,12 +377,7 @@ class PyQuery(list):
             <script><![[CDATA[ ]></script>
 
         """
-        has_text_nodes = any(isinstance(e, str) for e in self)
-        return u''.join(
-            e if isinstance(e, str) else lxml.html.tostring(
-                e, encoding=str, with_tail=not has_text_nodes)
-            for e in self
-        )
+        return self._serialize_nodes(lxml.html.tostring)
 
     def __repr__(self):
         r = []
