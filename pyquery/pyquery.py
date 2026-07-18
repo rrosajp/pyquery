@@ -1001,6 +1001,11 @@ class PyQuery(list):
             ['you', 'hou']
 
         """
+        def _option_value(option):
+            # Missing value attr uses option text (HTML / jQuery).
+            val = option.attr('value')
+            return option.text() if val is None else val
+
         def _get_value(tag):
             # <textarea>
             if tag.tag == 'textarea':
@@ -1012,13 +1017,15 @@ class PyQuery(list):
                     selected = self._copy(tag)('option[selected]')
                     # Rebuild list to avoid serialization error
                     return list(selected.map(
-                        lambda _, o: self._copy(o).attr('value')
+                        lambda _, o: _option_value(self._copy(o))
                     ))
                 selected_option = self._copy(tag)('option[selected]:last')
                 if selected_option:
-                    return selected_option.attr('value')
-                else:
-                    return self._copy(tag)('option').attr('value')
+                    return _option_value(selected_option)
+                first = self._copy(tag)('option:first')
+                if first:
+                    return _option_value(first)
+                return None
             # <input type="checkbox"> or <input type="radio">
             elif self.is_(':checkbox,:radio'):
                 val = self._copy(tag).attr('value')
