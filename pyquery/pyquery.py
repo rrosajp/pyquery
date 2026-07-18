@@ -768,7 +768,8 @@ class PyQuery(list):
         length = len(args)
         if length == 1:
             attr = args[0]
-            attr = mapping.get(attr, attr)
+            if not isinstance(attr, dict):
+                attr = mapping.get(attr, attr)
         elif length == 2:
             attr, value = args
             attr = mapping.get(attr, attr)
@@ -784,7 +785,7 @@ class PyQuery(list):
         elif isinstance(attr, dict):
             for tag in self:
                 for key, value in attr.items():
-                    tag.set(key, value)
+                    tag.set(mapping.get(key, key), value)
         elif value is no_default:
             return self[0].get(attr)
         elif value is None:
