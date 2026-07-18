@@ -353,12 +353,21 @@ class PyQuery(list):
             <script>&lt;![[CDATA[ ]&gt;</script>
 
         """
-        return ''.join([etree.tostring(e, encoding=str) for e in self])
+        has_text_nodes = any(isinstance(e, str) for e in self)
+        return ''.join(
+            e if isinstance(e, str) else etree.tostring(
+                e, encoding=str, with_tail=not has_text_nodes)
+            for e in self
+        )
 
     def __unicode__(self):
         """xml representation of current nodes"""
-        return u''.join([etree.tostring(e, encoding=str)
-                         for e in self])
+        has_text_nodes = any(isinstance(e, str) for e in self)
+        return u''.join(
+            e if isinstance(e, str) else etree.tostring(
+                e, encoding=str, with_tail=not has_text_nodes)
+            for e in self
+        )
 
     def __html__(self):
         """html representation of current nodes::
@@ -369,8 +378,12 @@ class PyQuery(list):
             <script><![[CDATA[ ]></script>
 
         """
-        return u''.join([lxml.html.tostring(e, encoding=str)
-                         for e in self])
+        has_text_nodes = any(isinstance(e, str) for e in self)
+        return u''.join(
+            e if isinstance(e, str) else lxml.html.tostring(
+                e, encoding=str, with_tail=not has_text_nodes)
+            for e in self
+        )
 
     def __repr__(self):
         r = []

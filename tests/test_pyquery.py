@@ -359,6 +359,19 @@ class TestComment(TestCase):
         self.assertEqual(doc.text(), 'bar')
 
 
+class TestContentsStr(TestCase):
+
+    def test_str_contents_with_text_nodes(self):
+        doc = pq('hello <b>bold</b> world')
+        contents = doc.contents()
+        self.assertEqual(str(contents), 'hello <b>bold</b> world')
+        self.assertEqual(contents.__html__(), 'hello <b>bold</b> world')
+
+    def test_str_contents_text_only(self):
+        doc = pq('<div>only text</div>')
+        self.assertEqual(str(doc.contents()), 'only text')
+
+
 class TestCallback(TestCase):
     html = """
         <ol>
