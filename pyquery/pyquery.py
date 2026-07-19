@@ -67,6 +67,9 @@ def build_camel_case_aliases(PyQuery):
 def fromstring(context, parser=None, custom_parser=None):
     """use html parser if we don't have clean xml
     """
+    # Empty/whitespace-only markup → empty document (jQuery $('') parity).
+    if isinstance(context, basestring) and not context.strip():
+        return []
     if hasattr(context, 'read') and hasattr(context.read, '__call__'):
         meth = 'parse'
     else:

@@ -351,6 +351,14 @@ class TestConstruction(TestCase):
     def test_typeerror_on_invalid_value(self):
         self.assertRaises(TypeError, pq, object())
 
+    def test_empty_string_returns_empty_doc(self):
+        """Empty/whitespace markup must not raise ParserError."""
+        for markup in ('', '   ', '\n', '\t  \n'):
+            doc = pq(markup)
+            self.assertEqual(len(doc), 0)
+            self.assertEqual(doc.html(), None)
+            self.assertEqual(list(doc), [])
+
 
 class TestComment(TestCase):
 
