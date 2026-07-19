@@ -344,12 +344,12 @@ class PyQuery(list):
                     el.tag = el.tag.split('}', 1)[1]
         return self
 
-    def _serialize_nodes(self, dumps):
+    def _serialize_nodes(self, dumps, method):
         # Text nodes from contents() cannot go through tostring.
         has_text_nodes = any(isinstance(e, str) for e in self)
         return ''.join(
             e if isinstance(e, str) else dumps(
-                e, encoding=str, with_tail=not has_text_nodes)
+                e, encoding=str, method=method, with_tail=not has_text_nodes)
             for e in self
         )
 
@@ -362,11 +362,11 @@ class PyQuery(list):
             <script>&lt;![[CDATA[ ]&gt;</script>
 
         """
-        return self._serialize_nodes(etree.tostring)
+        return self._serialize_nodes(etree.tostring, method='xml')
 
     def __unicode__(self):
         """xml representation of current nodes"""
-        return self._serialize_nodes(etree.tostring)
+        return self._serialize_nodes(etree.tostring, method='xml')
 
     def __html__(self):
         """html representation of current nodes::
@@ -377,7 +377,7 @@ class PyQuery(list):
             <script><![[CDATA[ ]></script>
 
         """
-        return self._serialize_nodes(lxml.html.tostring)
+        return self._serialize_nodes(lxml.html.tostring, method='html')
 
     def __repr__(self):
         r = []
