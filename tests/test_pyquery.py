@@ -497,6 +497,15 @@ Bacon</textarea>
         self.assertEqual(d.outer_html(), '<div value=""></div>')
         self.assertEqual(d.outer_html(method="xml"), '<div value=""/>')
 
+    def test_attr_dict_mapping(self):
+        d = pq('<div>')
+        d.attr({'id': 'x', 'class_': 'y', 'data-a': '1'})
+        self.assertEqual(d.attr('id'), 'x')
+        self.assertEqual(d.attr('class'), 'y')
+        self.assertEqual(d.attr('data-a'), '1')
+        self.assertEqual(d.attr(id='z', class_='w').attr('id'), 'z')
+        self.assertEqual(d.attr('class'), 'w')
+
     def test_remove(self):
         d = pq(self.html)
         d('img').remove()
