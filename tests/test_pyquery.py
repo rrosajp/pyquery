@@ -602,6 +602,27 @@ Bacon</textarea>
         self.assertEqual(d('#second').val(), '42')
         self.assertEqual(d('#third').val(), '42')
 
+    def test_val_select_option_without_value_attr(self):
+        d = pq('<select><option>a</option><option selected>b</option></select>')
+        self.assertEqual(d.val(), 'b')
+        d = pq('<select><option>first</option><option>second</option></select>')
+        self.assertEqual(d.val(), 'first')
+        d = pq('<select><option selected value="">empty</option></select>')
+        self.assertEqual(d.val(), '')
+        d = pq(
+            '<select multiple>'
+            '<option selected>a</option>'
+            '<option selected>b</option>'
+            '</select>'
+        )
+        self.assertEqual(d.val(), ['a', 'b'])
+        form = pq(
+            '<form><select name="s">'
+            '<option>t1</option><option selected>t2</option>'
+            '</select></form>'
+        )
+        self.assertEqual(form.serialize_pairs(), [('s', 't2')])
+
     def test_val_checkbox_no_value_attribute(self):
         d = pq('<input type="checkbox">')
         self.assertEqual(d.val(), 'on')
